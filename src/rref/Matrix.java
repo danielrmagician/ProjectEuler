@@ -9,13 +9,17 @@ public class Matrix {
 	}
 	
 	public void rref() {
-		for (int i = 0; i<matrix[0].length-1; i++) {
-			for (int j = 0; j<matrix.length; j++) {
-				Fraction multiple = matrix[i][i].divide(matrix[j][i]);
-				if (i<j) {
-					multrowadd(multiple, i, j);
-				} else if (i>j) {
-					multrowaddneg(multiple, i, j);
+		for (int col = 0; col<matrix[0].length-1; col++) {
+			for (int row = 0; row<matrix.length; row++) {
+				Fraction multiple = new Fraction(1,1);
+				if(matrix[row][col].equals(new Fraction(0,1))==false) {
+					multiple = matrix[col][col].divide(matrix[row][col]);
+				}
+				if (col<row) {
+					multrowadd(multiple, col, row);
+				}
+				else if (col>row) {
+					multrowaddneg(multiple, col, row);
 				}
 			}
 		}
@@ -27,7 +31,7 @@ public class Matrix {
 	}
 	private void multrowaddneg(Fraction multiple, int row1, int row2) {
 		for (int col = 0; col<matrix[0].length; col++) {
-			matrix[row1][col]=(matrix[row2][col].multiply(multiple)).subtract(matrix[row1][col]);
+			matrix[row1][col]=(matrix[row1][col].multiply(multiple)).subtract(matrix[row2][col]);
 		}
 	}
 	public String toString() {

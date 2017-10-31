@@ -101,7 +101,7 @@ public class Fraction
    }
    
    public boolean equals (Fraction fraction){
-      if ( this.numerator == fraction.numerator && this.denominator == fraction.denominator)
+      if ( this.numerator*fraction.denominator == fraction.numerator*this.denominator)
          return true;
       else return false;
    }
