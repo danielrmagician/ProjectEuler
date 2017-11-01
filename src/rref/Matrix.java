@@ -19,19 +19,19 @@ public class Matrix {
 					multrowadd(multiple, col, row);
 				}
 				else if (col>row) {
-					multrowaddneg(multiple, col, row);
+					multrowadd(multiple, col, row);
 				}
+			}
+		}
+		for (int i = 0; i<matrix.length; i++) {
+			for (int col = 0; col<matrix[0].length-1; col++) {
+				matrix[i][col]=matrix[i][col].divide(matrix[col][col]);
 			}
 		}
 	}
 	private void multrowadd(Fraction multiple, int row1, int row2) {
 		for (int col = 0; col<matrix[0].length; col++) {
 			matrix[row2][col]=matrix[row1][col].subtract(matrix[row2][col].multiply(multiple));
-		}
-	}
-	private void multrowaddneg(Fraction multiple, int row1, int row2) {
-		for (int col = 0; col<matrix[0].length; col++) {
-			matrix[row1][col]=(matrix[row1][col].multiply(multiple)).subtract(matrix[row2][col]);
 		}
 	}
 	public String toString() {
@@ -41,6 +41,13 @@ public class Matrix {
 		        grid += matrix[i][j] + " ";
 		    }
 		    grid += "\n";
+		}
+		return grid;
+	}
+	public String toStringLast() {
+		String grid = "";
+		for (int j = 0; j < matrix.length; j++) {
+		    grid += matrix[j][matrix.length] + "\n";
 		}
 		return grid;
 	}
