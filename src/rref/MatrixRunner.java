@@ -22,7 +22,7 @@ public class MatrixRunner {
 		System.out.println();
 		matrx.rref();
 // 		Print out matrix
-		System.out.println(matrx.toStringLast());
+		System.out.println(matrx.toString());
 		
 //		Print out last column of rrefed matrix
 //		for (int i = 0; i < matrix.length; i++) {

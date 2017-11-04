@@ -26,14 +26,13 @@ Modified by Stewart Bracken
 ********************************/
 package rref;
 
-import java.lang.*;
-import java.io.*;
-import java.util.*;
+
+import org.apfloat.Apint;
 
 public class Fraction
 {
    // member variables
-   private int numerator, denominator;  // stores the fraction data
+   private Apint numerator, denominator;  // stores the fraction data
 
    /**********************************************************
     Method:         Default Constructor
@@ -46,11 +45,11 @@ public class Fraction
    ***********************************************************/
    public Fraction()
    {
-      numerator = denominator = 0;
+      numerator = denominator = Apint.ZERO;
    }
    
-   public Fraction( int numerator, int denominator ) {
-      if (denominator == 0)
+   public Fraction( Apint numerator, Apint denominator ) {
+      if (denominator.equals(Apint.ZERO))
          throw new NumberFormatException("denominator is zero");
       this.numerator = numerator;
       this.denominator = denominator;
@@ -69,7 +68,7 @@ public class Fraction
     Postconditions: None
     Returns:        integer data stored in numerator member variable
    ***********************************************************/
-   public int getNumerator()
+   public Apint getNumerator()
    {
       return numerator;
    }
@@ -82,7 +81,7 @@ public class Fraction
     Postconditions: the value of num will be stored in numerator 
                     member variable
    ***********************************************************/
-   public void setNumerator(int num)
+   public void setNumerator(Apint num)
    {
       numerator=num;
    }
@@ -95,13 +94,13 @@ public class Fraction
     Postconditions: None
     Returns:        integer data stored in denominator member variable
    ***********************************************************/
-   public int getDenominator()
+   public Apint getDenominator()
    {
       return denominator;
    }
    
    public boolean equals (Fraction fraction){
-      if ( this.numerator*fraction.denominator == fraction.numerator*this.denominator)
+      if (this.numerator.multiply(fraction.denominator).equals(fraction.numerator.multiply(this.denominator)))
          return true;
       else return false;
    }
@@ -116,10 +115,10 @@ public class Fraction
       int count = 0; // at least 3 for num, denom, and /
       boolean negative = false;
       //if (this.numerator<0) negative = true;
-      String buffer = Integer.toString(this.numerator);
+      String buffer = this.numerator.toString();
       count +=buffer.length();
-      if (this.denominator != 1) {
-         buffer = Integer.toString(this.denominator);
+      if (this.denominator.equals(1)==false) {
+         buffer = this.denominator.toString();;
          count +=buffer.length();
          count++; //acount for /
       }
@@ -134,7 +133,7 @@ public class Fraction
     Postconditions: the value of den will be stored in denominator
                     member variable
    ***********************************************************/
-   public void setDenominator(int den)
+   public void setDenominator(Apint den)
    {
       denominator=den;
    }
@@ -156,7 +155,7 @@ public class Fraction
    public Fraction add(Fraction b)
    {
       // check preconditions
-      if ((denominator == 0) || (b.denominator == 0))
+      if ((denominator.equals(0)) || (b.denominator.equals(0)))
          throw new IllegalArgumentException("invalid denominator");
       // find lowest common denominator
       int common = lcd(denominator, b.denominator);
@@ -333,8 +332,8 @@ public class Fraction
    public String toString()
    {
       String buffer;
-      if (denominator!=1) buffer = numerator + "/" + denominator;
-      else buffer = Integer.toString(numerator);
+      if (denominator.equals(1)==false) buffer = numerator + "/" + denominator;
+      else buffer = numerator.toString();
       return buffer;
    }
 
@@ -352,12 +351,12 @@ public class Fraction
     Returns:        the lowest common denominator between denom1 and
                     denom2
    ***********************************************************/
-   private int lcd(int denom1, int denom2)
+   private Apint lcd(Apint denominator2, Apint denominator3)
    {
-      int factor = denom1;
-      while ((denom1 % denom2) != 0)
-         denom1 += factor;
-      return denom1;
+      Apint factor = denominator2;
+      while ((denominator2.mod((denominator3)).equals(0)==false))
+         denominator2.add(factor);
+      return denominator2;
    }
 
    /**********************************************************
@@ -374,12 +373,12 @@ public class Fraction
     Credits:        Thanks to Euclid for inventing the gcd algorithm,
                     and to Prof. Joyce for explaining it to me.
    ***********************************************************/
-   private int gcd(int denom1, int denom2)
+   private Apint gcd(Apint denom1, Apint denom2)
    {
-      int factor = denom2;
-      while (denom2 != 0) {
+      Apint factor = denom2;
+      while (denom2.equals(0)==false) {
          factor = denom2;
-         denom2 = denom1 % denom2;
+         denom2 = denom1.mod(denom2);
          denom1 = factor;
       }
       return denom1;
@@ -399,11 +398,11 @@ public class Fraction
                     fraction, but has been converted to the new
                     denominator called common
    ***********************************************************/
-   private Fraction convert(int common)
+   private Fraction convert(Apint common)
    {
       Fraction result = new Fraction();
-      int factor = common / denominator;
-      result.numerator = numerator * factor;
+      Apint factor = common.divide(denominator);
+      result.numerator = numerator.multiply(factor);
       result.denominator = common;
       return result;
    }
