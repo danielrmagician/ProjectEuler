@@ -1,5 +1,7 @@
 package rref;
 
+import org.apfloat.Apint;
+
 public class rrefMatrixRunner {
 
 	public static void main(String[] args) {
@@ -9,11 +11,11 @@ public class rrefMatrixRunner {
 		for (int i = 1; i<=n; i++) {
 			for (int j = 1; j<=n+1; j++) {
 				if (j!=n+1) {
-					Fraction frac = new Fraction((int)Math.pow(i, j),1);
+					Fraction frac = new Fraction(new Apint((long) Math.pow(i, j)), Apint.ONE);
 					matrix[i-1][j-1] = frac;
 				}
 				else {
-					matrix[i-1][j-1] = new Fraction(i*i+1,1);
+					matrix[i-1][j-1] = new Fraction(new Apint((long) Math.pow(i, 2)+1), Apint.ONE);
 				}
 			}
 		}

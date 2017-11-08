@@ -158,7 +158,7 @@ public class Fraction
       if ((denominator.equals(0)) || (b.denominator.equals(0)))
          throw new IllegalArgumentException("invalid denominator");
       // find lowest common denominator
-      int common = lcd(denominator, b.denominator);
+      Apint common = lcd(denominator, b.denominator);
       // convert fractions to lcd
       Fraction commonA = new Fraction();
       Fraction commonB = new Fraction();
@@ -167,7 +167,7 @@ public class Fraction
       // create new fraction to return as sum
       Fraction sum = new Fraction();
       // calculate sum
-      sum.numerator = commonA.numerator + commonB.numerator;
+      sum.numerator = commonA.numerator.add(commonB.numerator);
       sum.denominator = common;
       // reduce the resulting fraction
       sum = sum.reduce();
@@ -187,10 +187,10 @@ public class Fraction
    public Fraction subtract(Fraction b)
    {
       // check preconditions
-      if ((denominator == 0) || (b.denominator == 0))
+      if ((denominator.equals(Apint.ZERO)) || (b.denominator.equals(Apint.ZERO)))
          throw new IllegalArgumentException("invalid denominator");
       // find lowest common denominator
-      int common = lcd(denominator, b.denominator);
+      Apint common = lcd(denominator, b.denominator);
       // convert fractions to lcd
       Fraction commonA = new Fraction();
       Fraction commonB = new Fraction();
@@ -199,7 +199,7 @@ public class Fraction
       // create new fraction to return as difference
       Fraction diff = new Fraction();
       // calculate difference
-      diff.numerator = commonA.numerator - commonB.numerator;
+      diff.numerator = commonA.numerator.subtract(commonB.numerator);
       diff.denominator = common;
       // reduce the resulting fraction
       diff = diff.reduce();
@@ -219,13 +219,13 @@ public class Fraction
    public Fraction multiply(Fraction b)
    {
       // check preconditions
-      if ((denominator == 0) || (b.denominator == 0))
+      if ((denominator.equals(Apint.ZERO)) || (b.denominator.equals(Apint.ZERO)))
          throw new IllegalArgumentException("invalid denominator");
       // create new fraction to return as product
       Fraction product = new Fraction();
       // calculate product
-      product.numerator = numerator * b.numerator;
-      product.denominator = denominator * b.denominator;
+      product.numerator = numerator.multiply(b.numerator);
+      product.denominator = denominator.multiply(b.denominator);
       // reduce the resulting fraction
       product = product.reduce();
       return product;
@@ -244,13 +244,13 @@ public class Fraction
    public Fraction divide(Fraction b)
    {
       // check preconditions
-      if ((denominator == 0) || (b.numerator == 0))
+      if ((denominator.equals(Apint.ZERO)) || (b.numerator.equals(Apint.ZERO)))
          throw new IllegalArgumentException("invalid denominator");
       // create new fraction to return as result
       Fraction result = new Fraction();
       // calculate result
-      result.numerator = numerator * b.denominator;
-      result.denominator = denominator * b.numerator;
+      result.numerator = numerator.multiply(b.denominator);
+      result.denominator = denominator.multiply(b.numerator);
       // reduce the resulting fraction
       result = result.reduce();
       return result;
@@ -258,7 +258,7 @@ public class Fraction
    
    
    public Fraction inverse(Fraction b){
-      if ((denominator == 0) || (b.numerator == 0))
+      if ((denominator.equals(Apint.ZERO)) || (b.denominator.equals(Apint.ZERO)))
          throw new IllegalArgumentException("invalid denominator");
       Fraction result = new Fraction();
       result.numerator = b.denominator;
@@ -332,7 +332,7 @@ public class Fraction
    public String toString()
    {
       String buffer;
-      if (denominator.equals(1)==false) buffer = numerator + "/" + denominator;
+      if (denominator.equals(Apint.ONE)==false) buffer = numerator + "/" + denominator;
       else buffer = numerator.toString();
       return buffer;
    }
@@ -354,8 +354,8 @@ public class Fraction
    private Apint lcd(Apint denominator2, Apint denominator3)
    {
       Apint factor = denominator2;
-      while ((denominator2.mod((denominator3)).equals(0)==false))
-         denominator2.add(factor);
+      while ((denominator2.mod((denominator3)).equals(Apint.ZERO)==false))
+         denominator2 = denominator2.add(factor);
       return denominator2;
    }
 
@@ -376,7 +376,7 @@ public class Fraction
    private Apint gcd(Apint denom1, Apint denom2)
    {
       Apint factor = denom2;
-      while (denom2.equals(0)==false) {
+      while (denom2.equals(Apint.ZERO)==false) {
          factor = denom2;
          denom2 = denom1.mod(denom2);
          denom1 = factor;
@@ -421,30 +421,45 @@ public class Fraction
    private Fraction reduce()
    {
       Fraction result = new Fraction();
-      int common = 0;
+      Apint common = Apint.ZERO;
       // get absolute values for numerator and denominator
-      int num = Math.abs(numerator);
-      int den = Math.abs(denominator);
+      Apint num = abs(numerator);
+      Apint den = abs(denominator);
       // figure out which is less, numerator or denominator
-      if (num > den)
+      if (num.compareTo(den)==1)
          common = gcd(num, den);
-      else if (num < den)
+      else if (num.compareTo(den)==-1)
          common = gcd(den, num);
       else  // if both are the same, don't need to call gcd
          common = num;
 
       // set result based on common factor derived from gcd
-      result.numerator = numerator / common;
-      result.denominator = denominator / common;
-      if (result.numerator < 0 && result.denominator < 0){
-         result.numerator = -result.numerator;
-         result.denominator = -result.denominator;
-      } else if ( result.numerator >= 0 && result.denominator < 0){
-         result.denominator =-result.denominator;
-         result.numerator =-result.numerator;
+      result.numerator = numerator.divide(common);
+      result.denominator = denominator.divide(common);
+      if (result.numerator.compareTo(Apint.ZERO)==-1 && result.denominator.compareTo(Apint.ZERO)==-1){
+         result.numerator = result.numerator.negate();
+         result.denominator = result.denominator.negate();
+      } else if (result.numerator.compareTo(Apint.ZERO)!=-1 && result.denominator.compareTo(Apint.ZERO)==-1){
+         result.denominator = result.denominator.negate();
+         result.numerator = result.numerator.negate();
       }
       return result;
    }
+   
+   /**********************************************************
+   Method:         absolute value
+   Purpose:        return absolute value of a number
+   Preconditions:  must be APint
+   Postconditions: none
+   Returns:        absolute value of a number
+  ***********************************************************/
+  private Apint abs(Apint number)
+  {
+     if (number.compareTo(Apint.ZERO)==-1) {
+    	 number = number.negate();
+     }
+     return number;
+  }
 
    /**********************************************************
     Method:         main

@@ -1,5 +1,7 @@
 package rref;
 
+import org.apfloat.Apint;
+
 public class Matrix {
 	
 	private Fraction[][] matrix;
@@ -11,9 +13,10 @@ public class Matrix {
 	public void rref() {
 		for (int col = 0; col<matrix[0].length-1; col++) {
 			for (int row = 0; row<matrix.length; row++) {
-				Fraction multiple = new Fraction(1,1);
-				if(matrix[row][col].equals(new Fraction(0,1))==false) {
+				Fraction multiple = new Fraction(Apint.ONE,Apint.ONE);
+				if(matrix[row][col].equals(new Fraction(Apint.ZERO,Apint.ONE))==false) {
 					multiple = matrix[col][col].divide(matrix[row][col]);
+//					System.out.println(multiple + " " + row + " " + col + " " + matrix[col][col] + " " + matrix[row][col]);
 				}
 				if (col<row) {
 					multrowadd(multiple, col, row);
